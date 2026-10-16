@@ -1,0 +1,14 @@
+services:
+  proxy-admin:
+    build: .
+    restart: unless-stopped
+    environment:
+      ADMIN_USER: ${ADMIN_USER:?set ADMIN_USER in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      DB_PATH: /app/data/app.db
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - proxy_admin_data:/app/data
+volumes:
+  proxy_admin_data:

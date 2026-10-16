@@ -1,0 +1,28 @@
+{
+  "log": {
+    "level": "info"
+  },
+  "inbounds": [
+    {
+      "type": "socks",
+      "tag": "local-socks-in",
+      "listen": "127.0.0.1",
+      "listen_port": 2080,
+      "users": [
+        {
+          "username": "proxyadmin",
+          "password": "REPLACE_WITH_RANDOM_SECRET"
+        }
+      ]
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "final": "direct"
+  }
+}

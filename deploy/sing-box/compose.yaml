@@ -1,0 +1,69 @@
+services:
+  config-init:
+    image: alpine:3.22
+    restart: "no"
+    volumes:
+      - ./config:/config
+      - ./state:/state
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - "chown -R 10001:10001 /config /state; chmod 750 /config /state; chmod 600 /config/config.json"
+
+  sing-box:
+    image: proxy-admin-sing-box:local
+    build:
+      context: ${PROJECT_ROOT:?set PROJECT_ROOT in .env}
+      dockerfile: deploy/sing-box/core.Dockerfile
+      args:
+        SINGBOX_IMAGE: ${SINGBOX_IMAGE:-ghcr.io/sagernet/sing-box:v1.14.3}
+    restart: unless-stopped
+    network_mode: host
+    read_only: true
+    tmpfs:
+      - /tmp
+    depends_on:
+      config-init:
+        condition: service_completed_successfully
+    environment:
+      SINGBOX_BINARY: /usr/local/bin/sing-box
+      SINGBOX_CONFIG_FILE: /etc/sing-box/config.json
+      SINGBOX_DATA_DIR: /var/lib/sing-box
+      SINGBOX_STATE_FILE: /run/sing-box-state/supervisor.json
+    volumes:
+      - ./config:/etc/sing-box
+      - ./data/sing-box:/var/lib/sing-box
+      - ./state:/run/sing-box-state
+
+  proxy-admin:
+    image: proxy-admin-sing-box-admin:local
+    build:
+      context: ${PROJECT_ROOT:?set PROJECT_ROOT in .env}
+      dockerfile: deploy/sing-box/proxy-admin.Dockerfile
+      args:
+        SINGBOX_IMAGE: ${SINGBOX_IMAGE:-ghcr.io/sagernet/sing-box:v1.14.3}
+    restart: unless-stopped
+    depends_on:
+      config-init:
+        condition: service_completed_successfully
+      sing-box:
+        condition: service_started
+    environment:
+      ADMIN_USER: ${ADMIN_USER:?set ADMIN_USER in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      ADMIN_PUBLIC_URL: ${ADMIN_PUBLIC_URL:-}
+      SERVER_PUBLIC_ADDRESS: ${SERVER_PUBLIC_ADDRESS:-}
+      DB_PATH: /app/data/app.db
+      SINGBOX_CONFIG_PATH: /app/singbox-config/config.json
+      SINGBOX_STATUS_PATH: /app/singbox-state/supervisor.json
+      SINGBOX_DATA_DIR: /tmp/sing-box-check
+      SINGBOX_BINARY: /usr/local/bin/sing-box
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - proxy_admin_data:/app/data
+      - ./config:/app/singbox-config
+      - ./config:/etc/sing-box:ro
+      - ./state:/app/singbox-state:ro
+
+volumes:
+  proxy_admin_data:
