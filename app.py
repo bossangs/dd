@@ -836,10 +836,10 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;bor
 <p class="muted">安全提示：233boy 脚本以 root 权限安装软件并配置服务；执行前审阅源代码。删除配置（del/ddel）会直接生效；不要在生产服务器上盲目执行示例。</p></div>
 <div class="card"><h2>sing-box 核心 Docker 部署</h2><p class="muted">此脚本部署 sing-box 核心容器，不是本管理后台。它不会自动安装 Docker，不会挂载 Docker Socket，也不会把后台节点草稿自动写入核心配置。</p>
 <ol class="muted"><li>在 Linux VPS 上准备 Docker Engine 和 Docker Compose v2，并从项目仓库根目录运行下面命令。</li><li>初始化脚本默认在 $HOME/sing-box-docker 部署，创建带随机密码的 SOCKS5 配置（仅监听 127.0.0.1:2080），校验后启动官方核心镜像。</li><li>如需对外提供服务，先按 sing-box 配置格式编辑 config/config.json，明确监听地址、协议、凭据和证书，再校验配置并重启；只放行实际使用的端口。</li><li>Compose 使用 Linux host 网络；默认配置只绑定回环地址。TUN 与特权模式未启用，配置文件含敏感凭据，应限制访问。</li></ol>
-<button class="secondary" type="button" onclick="copyText('singboxDockerCmd')">复制核心 Docker 部署命令</button><pre id="singboxDockerCmd">git clone https://github.com/bossangs/proxy-admin.git
-cd proxy-admin
+<button class="secondary" type="button" onclick="copyText('singboxDockerCmd')">复制核心 Docker 部署命令</button><pre id="singboxDockerCmd">git clone https://github.com/bossangs/dd.git
+cd dd
 bash scripts/install-sing-box-docker.sh</pre>
-<p class="muted">部署文档：<a href="https://github.com/bossangs/proxy-admin/blob/main/docs/sing-box-docker.md" target="_blank" rel="noopener noreferrer">sing-box Docker 部署</a>。</p></div>
+<p class="muted">部署文档：<a href="https://github.com/bossangs/dd/blob/main/docs/sing-box-docker.md" target="_blank" rel="noopener noreferrer">sing-box Docker 部署</a>。</p></div>
 <div class="card"><h2>sing-box 核心配置</h2><p class="muted">使用当前管理员登录认证。点击“校验并应用”后，后台会用与核心相同版本的 sing-box 执行 check、备份旧配置并原子保存；核心容器内监督器会重启 sing-box，失败时尝试恢复上一份可运行配置。应用配置会短暂中断现有连接。</p>
 <p><strong>运行状态：</strong><span id="singboxRuntimeStatus" class="muted">正在读取配置管理状态…</span></p>
 <label for="singboxRuntimeConfig">当前 sing-box JSON 配置（包含凭据，请勿公开或分享此页面）</label><textarea id="singboxRuntimeConfig" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
