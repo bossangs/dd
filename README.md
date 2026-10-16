@@ -1,4 +1,16 @@
-# 代理协议配置管理后台（MVP）
+宝塔代理
+检查安装版本apt update
+apt install -y git ca-certificates curl docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable --now docker
+docker --version
+docker compose version
+
+克隆git clone https://github.com/bossangs/dd.git
+cd dd
+bash scripts/install-sing-box-docker.sh
+查看管理员密码
+grep -E '^(ADMIN_USER|ADMIN_PASSWORD)=' /root/sing-box-docker/.env#看管理员密码
+（配合宝塔反代使用说明）# 代理协议配置管理后台（MVP）
 
 ## 功能
 - FastAPI + SQLite 的管理后台，HTTP Basic 管理员认证。
